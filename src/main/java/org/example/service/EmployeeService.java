@@ -17,14 +17,24 @@ public class EmployeeService {
     private static final int MAX_EMPLOYEES = 10;
     private final Map<String, Employee> employees = new HashMap<>();
 
+    private final ValidationService validationService;
+
+    public EmployeeService(ValidationService validationService) {
+        this.validationService = validationService;
+    }
+
     public void add(String firstName, String lastName, int department, int salary) {
         if (employees.size() == MAX_EMPLOYEES) {
             throw new EmployeeStorageIsFullException();
         }
+        firstName = validationService.validate(firstName);
+        lastName = validationService.validate(lastName);
+
         String key = buildKey(firstName, lastName);
         if (employees.containsKey(key)) {
             throw new EmployeeAlreadyAddedException();
         }
+
         employees.put(key, new Employee(firstName, lastName, department, salary));
     }
 
